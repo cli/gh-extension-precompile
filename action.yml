@@ -1,0 +1,4 @@
+name: "gh extension precompilation"
+description: "Generate a release for a precompiled gh extension"
+# TODO
+
