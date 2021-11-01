@@ -1,4 +1,32 @@
-name: "gh extension precompilation"
+name: "release extension"
 description: "Generate a release for a precompiled gh extension"
-# TODO
+on:
+  push:
+    tags:
+      - "v*"
 
+permissions:
+  contents: write
+
+inputs:
+  repository:
+    description: a gh extension repository
+    default: ${{ github.repository }}
+  platforms:
+    description: comma separated list of platform identifiers, like: "darwin-amd64,windows-arm64"
+    default: TODO
+  sign:
+    description: whether or not to sign release assets
+    default: false
+  build_script:
+    description: path to your repository's build script. it must create a dist/ directory at the top level with any release assets. by default, assumes Go code.
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - run: ${{ github.action_path }}/script/build_wrapper.sh
+      shell: bash
+    # TODO signing
+    - run: ${{ github.action_path}}/script/release.sh
+      shell: bash
