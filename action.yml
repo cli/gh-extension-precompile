@@ -8,6 +8,9 @@ inputs:
     description: "gpg fingerprint to use for signing releases. signing is disabled if empty."
   build_script_override:
     description: "use a custom build script instead of relying on built-in go compilation. see README.md for requirements."
+branding:
+  color: purple
+  icon: box
 runs:
   using: composite
   steps:
