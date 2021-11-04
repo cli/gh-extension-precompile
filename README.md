@@ -1,5 +1,7 @@
 # Action for releasing precompiled gh extensions
 
+**!!!!! THIS ACTION IS UNDER REVIEW AND IS SUBJECT TO CHANGE IN THE NEAR FUTURE !!!!!**
+
 [gh](https://github.com/cli/cli) is GitHub on the command line. It can be extended with both first and third-party user-defined commands via `gh extension`. These commands can be written in a compiled language like Go or Rust and this action exists to automate the release of such compiled extensions, making it possible to deliver binaries to users without having to worry about them having any kind of local toolchain in place.
 
 ## Quickstart (golang)
