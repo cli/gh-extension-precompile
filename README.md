@@ -36,7 +36,7 @@ git push origin v1.0.0
 
 Within a few minutes, users of your extension will be able to install your latest version.
 
-## Preleases
+## Prereleases
 
 To test out a release, you can push a prerelease tag like `v2.0.0-pre0`. This will create a prerelease and not result in an upgrade notice for your users.
 
