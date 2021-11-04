@@ -12,7 +12,7 @@ else
   for p in $platforms; do
     goos=$(echo $p | sed 's/-.*//')
     goarch=$(echo $p | sed 's/.*-//')
-    GOOS=${goos} GOARCH=${goarch} go build -o "dist/${goos}-${goarch}-${tag}"
+    GOOS=${goos} GOARCH=${goarch} go build -o "dist/${goos}-${goarch}"
   done
 fi
 

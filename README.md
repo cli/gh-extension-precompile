@@ -42,12 +42,14 @@ To test out a release, you can push a prerelease tag like `v2.0.0-pre0`. This wi
 
 If you aren't using Go, you'll need to provide your own script for compiling your extension and configure this action to use `build_script_override`:
 
-This script must produce executables in a `dist` directory all named with a suffix in the format: `platform-architecture-tag`. For example: `my-extension_windows-arm64-v1.0.0`.
+This script must produce executables in a `dist` directory all named with a suffix in the format: `platform-architecture`. For example: `my-extension_v1.0.0_windows-arm64`. Front matter in the filename is ignored by `gh`; only the suffix is matched.
+
+For examples of platform/architecture names, see [this list](https://github.com/cli/cli/blob/trunk/pkg/cmd/extension/manager.go#L650).
 
 Your build script will receive the tag to compile against as its first argument (`$1`).
 
 ```yaml
-- uses: cli/gh-extension-precompile@latest
+- uses: cli/gh-extension-precompile@v1
   with:
     build_script_override: "script/build.sh"
 ```
@@ -85,7 +87,7 @@ jobs:
         with:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
-      - uses: cli/gh-extension-precompile@latest
+      - uses: cli/gh-extension-precompile@v1
         with:
           gpg_fingerprint: ${{ steps.import_gpg.outputs.fingerprint }}
 ```
