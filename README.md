@@ -40,7 +40,7 @@ To test out a release, you can push a prerelease tag like `v2.0.0-pre0`. This wi
 
 ## Using with another language
 
-If you aren't using Go, you'll need to provide your own script for compiling your extension and configure this action to use `build_script`:
+If you aren't using Go, you'll need to provide your own script for compiling your extension and configure this action to use `build_script_override`:
 
 This script must produce executables in a `dist` directory all named with a suffix in the format: `platform-architecture-tag`. For example: `my-extension_windows-arm64-v1.0.0`.
 
@@ -49,7 +49,7 @@ Your build script will receive the tag to compile against as its first argument 
 ```yaml
 - uses: cli/gh-extension-precompile@latest
   with:
-    build_script: "script/build.sh"
+    build_script_override: "script/build.sh"
 ```
 
 Potentially useful environment variables exposed to your build script:
