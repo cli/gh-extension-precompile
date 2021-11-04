@@ -1,29 +1,25 @@
 name: "release extension"
 description: "Generate a release for a precompiled gh extension"
-on:
-  push:
-    tags:
-      - "v*"
-
 inputs:
-  repository:
-    description: a gh extension repository
-    default: ${{ github.repository }}
   platforms:
-    description: comma separated list of platform identifiers, like: "darwin-amd64,windows-arm64"
-    default: TODO
-  sign:
-    description: whether or not to sign release assets
-    default: false
-  build_script:
-    description: path to your repository's build script. it must create a dist/ directory at the top level with any release assets. by default, assumes Go code.
-    default: ""
-
+    description: 'comma separated list of platform identifiers, like: "windows-arm64,plan9-amd64,solaris-amd64"'
+    default: "darwin-amd64,linux-386,linux-arm,linux-amd64,linux-arm64,windows-386,windows-amd64"
+  gpg_fingerprint:
+    description: "gpg fingerprint to use for signing releases. signing is disabled if empty."
+  build_script_override:
+    description: "use a custom build script instead of relying on built-in go compilation. see README.md for requirements."
 runs:
   using: composite
   steps:
-    - run: ${{ github.action_path }}/script/build_wrapper.sh
-      shell: bash
-    # TODO signing
-    - run: ${{ github.action_path}}/script/release.sh
+    # TODO i hate setting this up even for people not using the default Go
+    # build script, but there's no way to conditionalize it that I can figure
+    # out.
+    - uses: actions/setup-go@v2
+    - run: ${{ github.action_path }}/build_and_release.sh
+      env:
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_TOKEN: ${{ github.token }}
+        GH_EXT_BUILD_SCRIPT: ${{ inputs.build_script_override }}
+        GH_EXT_PLATFORMS: ${{ inputs.platforms }}
+        GPG_FINGERPRINT: ${{ inputs.gpg_fingerprint }}
       shell: bash
