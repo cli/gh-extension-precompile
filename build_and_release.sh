@@ -18,7 +18,6 @@ fi
 
 ls -A dist >/dev/null || (echo "no files found in dist/" && exit 1)
 
-
 if [ -n "${GPG_FINGERPRINT}" ]; then
   for f in $(ls dist); do
     shasum -a 256 dist/$f >> checksums.txt
@@ -35,6 +34,5 @@ fi
 
 gh api repos/$GITHUB_REPOSITORY/releases/generate-notes \
   -f tag_name="${tag}" -q .body > CHANGELOG.md
-
 
 gh release create $tag $prerelease --notes-file CHANGELOG.md $include
