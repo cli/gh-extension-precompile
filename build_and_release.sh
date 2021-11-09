@@ -12,7 +12,11 @@ else
   for p in $platforms; do
     goos=$(echo $p | sed 's/-.*//')
     goarch=$(echo $p | sed 's/.*-//')
-    GOOS=${goos} GOARCH=${goarch} go build -o "dist/${goos}-${goarch}"
+    ext=""
+    if [[ "${goos}" == "windows" ]]; then
+      ext=".exe"
+    fi
+    GOOS=${goos} GOARCH=${goarch} go build -o "dist/${goos}-${goarch}${ext}"
   done
 fi
 
