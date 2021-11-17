@@ -1,9 +1,6 @@
 name: "release extension"
 description: "Generate a release for a precompiled gh extension"
 inputs:
-  platforms:
-    description: 'comma separated list of platform identifiers, like: "windows-arm64,plan9-amd64,solaris-amd64"'
-    default: "darwin-amd64,linux-386,linux-arm,linux-amd64,linux-arm64,windows-386,windows-amd64"
   gpg_fingerprint:
     description: "gpg fingerprint to use for signing releases. signing is disabled if empty."
   build_script_override:

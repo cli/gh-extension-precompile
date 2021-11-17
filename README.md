@@ -60,7 +60,6 @@ Potentially useful environment variables exposed to your build script:
 
 - `GITHUB_REPOSITORY`: name of your repo in `owner/repo` format
 - `GITHUB_TOKEN`: auth token being used to run this workflow
-- `GH_EXT_PLATFORMS`: list of platforms to target
 
 ## Signing
 
@@ -92,25 +91,6 @@ jobs:
       - uses: cli/gh-extension-precompile@v1
         with:
           gpg_fingerprint: ${{ steps.import_gpg.outputs.fingerprint }}
-```
-
-## Customizing target platforms
-
-By default, this action targets the same platforms as `gh` itself:
-
-- darwin-amd64
-- linux-386
-- linux-amd64
-- linux-arm64
-- windows-386
-- windows-amd64
-
-You can override this list by configuring `platforms` with a new list of comma separated platforms; for example:
-
-```yaml
-- uses: cli/gh-extension-precompile@v1
-  with:
-    platforms: "plan9-amd64,solaris-amd64,windows-arm64"
 ```
 
 ## Author
