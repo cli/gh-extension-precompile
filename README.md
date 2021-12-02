@@ -44,7 +44,7 @@ If you aren't using Go, you'll need to provide your own script for compiling you
 
 This script must produce executables in a `dist` directory all named with a suffix in the format: `platform-architecture`. For example: `my-extension_v1.0.0_windows-arm64`. Front matter in the filename is ignored by `gh`; only the suffix is matched.
 
-For examples of platform/architecture names, see [this list](https://github.com/cli/cli/blob/trunk/pkg/cmd/extension/manager.go#L650).
+For examples of platform/architecture names, see [this list](https://github.com/cli/cli/blob/94a640bd2a0949d5aff3d55965fa31f641138399/pkg/cmd/extension/manager.go#L723).
 
 Your build script will receive the tag to compile against as its first argument (`$1`).
 
