@@ -5,6 +5,9 @@ inputs:
     description: "gpg fingerprint to use for signing releases. signing is disabled if empty."
   build_script_override:
     description: "use a custom build script instead of relying on built-in go compilation. see README.md for requirements."
+  go_version:
+    description: "The Go version to download (if necessary) and use. Supports semver spec and ranges."
+    default: '1.16'
 branding:
   color: purple
   icon: box
@@ -16,7 +19,7 @@ runs:
     # out.
     - uses: actions/setup-go@v2
       with:
-        go-version: '1.16'
+        go-version: ${{ inputs.go_version }}
     - run: ${{ github.action_path }}/build_and_release.sh
       env:
         GITHUB_REPOSITORY: ${{ github.repository }}

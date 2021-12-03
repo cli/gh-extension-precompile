@@ -38,6 +38,16 @@ Within a few minutes, users of your extension will be able to install your lates
 
 To test out a release, you can push a prerelease tag like `v2.0.0-pre0`. This will create a prerelease and not result in an upgrade notice for your users.
 
+## Go version
+
+By default, Go 1.16 will be used to build your extension. To change this, set `go_version`:
+
+```yaml
+- uses: cli/gh-extension-precompile@v1
+  with:
+    go_version: "1.17"
+```
+
 ## Using with another language
 
 If you aren't using Go, you'll need to provide your own script for compiling your extension and configure this action to use `build_script_override`:
