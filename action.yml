@@ -11,8 +11,6 @@ inputs:
   go_stable: 
     description: "Whether to download only stable versions"
     default: 'true'
-
-
 branding:
   color: purple
   icon: box
