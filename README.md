@@ -48,6 +48,15 @@ By default, Go 1.16 will be used to build your extension. To change this, set `g
     go_version: "1.17"
 ```
 
+To use unstable preview releases of Go, explicitly set the `go_stable` property to `false`:
+
+```yaml
+- uses: cli/gh-extension-precompile@v1
+  with:
+    go_stable: 'false'
+    go_version: "1.18.0-beta1"
+```
+
 ## Using with another language
 
 If you aren't using Go, you'll need to provide your own script for compiling your extension and configure this action to use `build_script_override`:
