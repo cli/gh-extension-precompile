@@ -2,7 +2,7 @@
 set -e
 
 tag=$(git describe --tags --abbrev=0)
-platforms=$(echo "darwin-amd64,linux-386,linux-arm,linux-amd64,linux-arm64,windows-386,windows-amd64" | tr "," "\n")
+platforms=$(echo "darwin-amd64,darwin-arm64,linux-386,linux-arm,linux-amd64,linux-arm64,windows-386,windows-amd64" | tr "," "\n")
 include="dist/*"
 
 if [ -n "${GH_EXT_BUILD_SCRIPT}" ]; then
