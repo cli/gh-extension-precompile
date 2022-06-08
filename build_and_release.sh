@@ -16,7 +16,7 @@ else
     if [[ "${goos}" == "windows" ]]; then
       ext=".exe"
     fi
-    GOOS=${goos} GOARCH=${goarch} go build -o "dist/${goos}-${goarch}${ext}"
+    GOOS=${goos} GOARCH=${goarch} go build -trimpath -ldflags="-s -w" -o "dist/${goos}-${goarch}${ext}"
   done
 fi
 
