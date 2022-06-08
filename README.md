@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: cli/gh-extension-precompile@latest
+      - uses: cli/gh-extension-precompile@v1
 ```
 
 Then, from the command line, push a tag to initiate a release:
