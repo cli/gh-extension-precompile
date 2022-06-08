@@ -62,4 +62,4 @@ if [ -n "$GPG_FINGERPRINT" ]; then
   assets+=(checksums.txt checksums.txt.sig)
 fi
 
-gh release create "$tag" $prerelease --generate-notes -- "${assets[@]}"
+gh release create "$tag" $prerelease --title="${GITHUB_REPOSITORY#*/} ${tag#v}" --generate-notes -- "${assets[@]}"
