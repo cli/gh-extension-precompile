@@ -2,12 +2,12 @@ name: "release extension"
 description: "Generate a release for a precompiled gh extension"
 inputs:
   gpg_fingerprint:
-    description: "gpg fingerprint to use for signing releases. signing is disabled if empty."
+    description: "GPG fingerprint to use for signing releases"
   build_script_override:
-    description: "use a custom build script instead of relying on built-in go compilation. see README.md for requirements."
+    description: "Path to custom build script for producing binaries to upload"
   go_version:
-    description: "The Go version to download (if necessary) and use. Supports semver spec and ranges."
-    default: '1.16'
+    description: "The Go version to use for compiling (supports semver spec and ranges)"
+    default: "1.16"
 branding:
   color: purple
   icon: box
@@ -23,6 +23,5 @@ runs:
         GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_TOKEN: ${{ github.token }}
         GH_EXT_BUILD_SCRIPT: ${{ inputs.build_script_override }}
-        GH_EXT_PLATFORMS: ${{ inputs.platforms }}
         GPG_FINGERPRINT: ${{ inputs.gpg_fingerprint }}
       shell: bash
