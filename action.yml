@@ -14,10 +14,8 @@ branding:
 runs:
   using: composite
   steps:
-    # TODO i hate setting this up even for people not using the default Go
-    # build script, but there's no way to conditionalize it that I can figure
-    # out.
-    - uses: actions/setup-go@v2
+    # TODO: figure out how to avoid setting up Go for non-Go extensions
+    - uses: actions/setup-go@v3
       with:
         go-version: ${{ inputs.go_version }}
     - run: ${{ github.action_path }}/build_and_release.sh
