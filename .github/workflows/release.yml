@@ -18,4 +18,4 @@ jobs:
         run: |
           tag="${GITHUB_REF#refs/tags/}"
           major=${tag%%.*}
-          gh api -X PATCH /repos/"$GITHUB_REPOSITORY"/git/refs/heads/"$major" -f sha="GITHUB_SHA"
+          gh api -X PATCH /repos/"$GITHUB_REPOSITORY"/git/refs/heads/"$major" -f sha="$GITHUB_SHA"
