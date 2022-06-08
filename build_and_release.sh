@@ -6,12 +6,16 @@ platforms=(
   android-arm64
   darwin-amd64
   darwin-arm64
+  freebsd-386
+  freebsd-amd64
+  freebsd-arm64
   linux-386
-  linux-arm
   linux-amd64
+  linux-arm
   linux-arm64
   windows-386
   windows-amd64
+  windows-arm64
 )
 
 if [[ $GITHUB_REF = refs/tags/* ]]; then
