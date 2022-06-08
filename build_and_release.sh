@@ -33,9 +33,15 @@ if [ -n "$GH_EXT_BUILD_SCRIPT" ]; then
   echo "invoking build script override $GH_EXT_BUILD_SCRIPT"
   ./"$GH_EXT_BUILD_SCRIPT" "$tag"
 else
+  IFS=$'\n' read -d '' -r -a supported_platforms < <(go tool dist list) || true
+
   for p in "${platforms[@]}"; do
     goos="${p%-*}"
     goarch="${p#*-}"
+    if [[ " ${supported_platforms[*]} " != *" ${goos}/${goarch} "* ]]; then
+      echo "warning: skipping unsupported platform $p" >&2
+      continue
+    fi
     ext=""
     if [ "$goos" = "windows" ]; then
       ext=".exe"
