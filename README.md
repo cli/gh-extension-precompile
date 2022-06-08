@@ -103,4 +103,4 @@ jobs:
 
 ## Author
 
-nate smith <vilmibm@github.com>
+- nate smith <https://github.com/vilmibm>
