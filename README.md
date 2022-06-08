@@ -1,10 +1,10 @@
-# Action for releasing precompiled gh extensions
+# Action for publishing GitHub CLI extensions
 
-[gh](https://github.com/cli/cli) is GitHub on the command line. It can be extended with both first and third-party user-defined commands via `gh extension`. These commands can be written in a compiled language like Go or Rust and this action exists to automate the release of such compiled extensions, making it possible to deliver binaries to users without having to worry about them having any kind of local toolchain in place.
+A GitHub CLI extension is any GitHub repository named `gh-*` that publishes a Release with precompiled binaries. This GitHub Action can be used in your extension repository to automate the creation and publishing of those binaries.
 
-## Quickstart (golang)
+## Go extensions
 
-Assuming your extension is written in Go and you don't care about signing your releases, you can incorporate this release into your extension's repo by adding a workflow file like this at `.github/workflows/release.yml`:
+Create a workflow file at `.github/workflows/release.yml`:
 
 ```yaml
 name: release
@@ -23,40 +23,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: cli/gh-extension-precompile@v1
+        with:
+          go_version: "1.16"
 ```
 
-Then, from the command line, push a tag to initiate a release:
+Then, either push a new git tag like `v1.0.0` to your repository, or create a new Release and have it initialize the associated git tag.
 
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
+When the `release` workflow finishes running, compiled binaries will be uploaded as assets to the `v1.0.0` Release and your extension will be installable by users of `gh extension install` on supported platforms.
 
-Within a few minutes, users of your extension will be able to install your latest version.
+You can safely test out release automation by creating tags that have a `-` in them; for example: `v2.0.0-rc.1`. Such Releases will be published as _prereleases_ and will not count as a stable release of your extension.
 
-## Prereleases
+## Extensions written in other compiled languages
 
-To test out a release, you can push a prerelease tag like `v2.0.0-pre0`. This will create a prerelease and not result in an upgrade notice for your users.
-
-## Go version
-
-By default, Go 1.16 will be used to build your extension. To change this, set `go_version`:
-
-```yaml
-- uses: cli/gh-extension-precompile@v1
-  with:
-    go_version: "1.17"
-```
-
-## Using with another language
-
-If you aren't using Go, you'll need to provide your own script for compiling your extension and configure this action to use `build_script_override`:
-
-This script must produce executables in a `dist` directory all named with a suffix in the format: `platform-architecture`. For example: `my-extension_v1.0.0_windows-arm64`. Front matter in the filename is ignored by `gh`; only the suffix is matched.
-
-For examples of platform/architecture names, see [this list](https://github.com/cli/cli/blob/94a640bd2a0949d5aff3d55965fa31f641138399/pkg/cmd/extension/manager.go#L723).
-
-Your build script will receive the tag to compile against as its first argument (`$1`).
+If you aren't using Go for your compiled extension, you'll need to provide your own script for compiling your extension:
 
 ```yaml
 - uses: cli/gh-extension-precompile@v1
@@ -64,16 +43,24 @@ Your build script will receive the tag to compile against as its first argument 
     build_script_override: "script/build.sh"
 ```
 
-Potentially useful environment variables exposed to your build script:
+The build script will receive the release tag name as the first argument.
 
-- `GITHUB_REPOSITORY`: name of your repo in `owner/repo` format
-- `GITHUB_TOKEN`: auth token being used to run this workflow
+This script **must** produce executables in a `dist` directory with file names ending with: `{os}-{arch}{ext}`, where the extension is `.exe` on Windows and blank on other platforms. For example:
+- `dist/gh-my-ext_v1.0.0_darwin-amd64`
+- `dist/gh-my-ext_v1.0.0_windows-386.exe`
 
-## Signing
+For valid `{os}-{arch}` combinations, see the output of `go tool dist list` with the Go version you intend to use for compiling.
 
-This action can produce a checksum file for all generated executables and then sign it with GPG.
+Potentially useful environment variables available in your build script:
 
-To enable this, make sure your repository has the secrets `GPG_SECRET_KEY` and `GPG_PASSPHRASE` set. Then, configure this action like so:
+- `GITHUB_REPOSITORY`: name of your extension repository in `owner/repo` format
+- `GITHUB_TOKEN`: auth token with access to GITHUB_REPOSITORY
+
+## Checksum file and signing
+
+This action can optionally produce a checksum file for all published executables and sign it with GPG.
+
+To enable this, make sure your repository has the secrets `GPG_SECRET_KEY` and `GPG_PASSPHRASE` set. (Tip: you can use `gh secret set` for this.) Then, configure this action like so:
 
 ```yaml
 name: release
@@ -101,6 +88,7 @@ jobs:
           gpg_fingerprint: ${{ steps.import_gpg.outputs.fingerprint }}
 ```
 
-## Author
+## Authors
 
 - nate smith <https://github.com/vilmibm>
+- the GitHub CLI team <https://github.com/cli>
