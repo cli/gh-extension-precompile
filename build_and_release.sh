@@ -63,12 +63,13 @@ if [ "${#assets[@]}" -eq 0 ]; then
 fi
 
 if [ -n "$GPG_FINGERPRINT" ]; then
-  shasum -a 256 "${assets[@]}" > checksums.txt
+  shasum -a 256 "${assets[@]}" >checksums.txt
   gpg --output checksums.txt.sig --detach-sign checksums.txt
   assets+=(checksums.txt checksums.txt.sig)
 fi
 
-if ! gh release create "$tag" $prerelease --title="${GITHUB_REPOSITORY#*/} ${tag#v}" --generate-notes -- "${assets[@]}"; then
-  echo "trying to upload assets to an existing release instead..."
+if [ "$EXISTING_RELEASE" = "true" ]; then
   gh release upload "$tag" --clobber -- "${assets[@]}"
+else
+  gh release create "$tag" $prerelease --title="${GITHUB_REPOSITORY#*/} ${tag#v}" --generate-notes -- "${assets[@]}"
 fi

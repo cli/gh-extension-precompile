@@ -33,6 +33,8 @@ When the `release` workflow finishes running, compiled binaries will be uploaded
 
 You can safely test out release automation by creating tags that have a `-` in them; for example: `v2.0.0-rc.1`. Such Releases will be published as _prereleases_ and will not count as a stable release of your extension.
 
+If you have an existing release, you can set `existing_release` input to `"true"` to have the action upload binaries to the tag instead of creating a new one.
+
 ## Extensions written in other compiled languages
 
 If you aren't using Go for your compiled extension, you'll need to provide your own script for compiling your extension:
