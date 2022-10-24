@@ -7,7 +7,7 @@ inputs:
     description: "Path to custom build script for producing binaries to upload"
   go_version:
     description: "The Go version to use for compiling (supports semver spec and ranges)"
-    default: "1.17"
+    default: "1.18"
 branding:
   color: purple
   icon: box
