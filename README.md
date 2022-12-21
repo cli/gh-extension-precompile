@@ -60,7 +60,7 @@ Potentially useful environment variables available in your build script:
 
 This action can optionally produce a checksum file for all published executables and sign it with GPG.
 
-To enable this, make sure your repository has the secrets `GPG_SECRET_KEY` and `GPG_PASSPHRASE` set. (Tip: you can use `gh secret set` for this.) Then, configure this action like so:
+To enable this, make sure your repository has the secrets `GPG_SECRET_KEY` and `GPG_PASSPHRASE` set. (Tip: you can use `gh secret set` for this; follow the instructions [here](https://github.com/crazy-max/ghaction-import-gpg) to obtain the correct secret values.) Then, configure this action like so:
 
 ```yaml
 name: release
@@ -77,11 +77,11 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v3
+        uses: crazy-max/ghaction-import-gpg@v5
         with:
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
       - uses: cli/gh-extension-precompile@v1
         with:
