@@ -8,6 +8,9 @@ inputs:
   go_version:
     description: "The Go version to use for compiling (supports semver spec and ranges)"
     default: "1.18"
+  cgo_enabled:
+    description: "The value of the CGO_ENABLED environment variable"
+    default: 0
 branding:
   color: purple
   icon: box
@@ -24,4 +27,5 @@ runs:
         GITHUB_TOKEN: ${{ github.token }}
         GH_EXT_BUILD_SCRIPT: ${{ inputs.build_script_override }}
         GPG_FINGERPRINT: ${{ inputs.gpg_fingerprint }}
+        CGO_ENABLED: ${{ inputs.cgo_enabled }}
       shell: bash
