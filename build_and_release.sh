@@ -34,7 +34,6 @@ if [ -n "$GH_EXT_BUILD_SCRIPT" ]; then
   ./"$GH_EXT_BUILD_SCRIPT" "$tag"
 else
   IFS=$'\n' read -d '' -r -a supported_platforms < <(go tool dist list) || true
-  export CGO_ENABLED="${CGO_ENABLED:-0}"
 
   for p in "${platforms[@]}"; do
     goos="${p%-*}"
@@ -47,7 +46,7 @@ else
     if [ "$goos" = "windows" ]; then
       ext=".exe"
     fi
-    GOOS="$goos" GOARCH="$goarch" go build -trimpath -ldflags="-s -w" -o "dist/${p}${ext}"
+    GOOS="$goos" GOARCH="$goarch" CGO_ENABLED="${CGO_ENABLED:-0}" go build -trimpath -ldflags="-s -w" -o "dist/${p}${ext}"
   done
 fi
 
