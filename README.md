@@ -33,12 +33,12 @@ When the `release` workflow finishes running, compiled binaries will be uploaded
 
 You can safely test out release automation by creating tags that have a `-` in them; for example: `v2.0.0-rc.1`. Such Releases will be published as _prereleases_ and will not count as a stable release of your extension.
 
-By default, the action runs with cgo disabled. To override that default, set the `cgo_enabled` parameter to `1`:
+By default, the action runs with cgo disabled. To override that default, set the `CGO_ENABLED` environment variable to `1`:
 
 ```yaml
       - uses: cli/gh-extension-precompile@v1
-        with:
-          cgo_enabled: 1
+        env:
+          CGO_ENABLED: 1
 ```
 
 ## Extensions written in other compiled languages
