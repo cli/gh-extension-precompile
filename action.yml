@@ -18,7 +18,7 @@ runs:
     - uses: actions/setup-go@v3
       with:
         go-version: ${{ inputs.go_version }}
-    - run: ${{ github.action_path }}/build_and_release.sh
+    - run: ${GITHUB_ACTION_PATH//\\//}/build_and_release.sh
       env:
         GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_TOKEN: ${{ github.token }}
