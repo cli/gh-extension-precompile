@@ -19,12 +19,30 @@ permissions:
 
 jobs:
   release:
+    strategy:
+      matrix:
+        platform:
+          -  android-amd64
+          -  android-arm64
+          -  darwin-amd64
+          -  darwin-arm64
+          -  freebsd-386
+          -  freebsd-amd64
+          -  freebsd-arm64
+          -  linux-386
+          -  linux-amd64
+          -  linux-arm
+          -  linux-arm64
+          -  windows-386
+          -  windows-amd64
+          -  windows-arm64
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: cli/gh-extension-precompile@v1
+      - uses: cli/gh-extension-precompile@v2
         with:
           go_version: "1.16"
+          platform: ${{ matrix.platform }}
 ```
 
 Then, either push a new git tag like `v1.0.0` to your repository, or create a new Release and have it initialize the associated git tag.
@@ -36,7 +54,7 @@ You can safely test out release automation by creating tags that have a `-` in t
 To maximize portability of built products, this action builds Go binaries with [cgo](https://pkg.go.dev/cmd/cgo) disabled. To override that, set the `CGO_ENABLED` environment variable:
 
 ```yaml
-- uses: cli/gh-extension-precompile@v1
+- uses: cli/gh-extension-precompile@v2
   env:
     CGO_ENABLED: 1
 ```
@@ -46,7 +64,7 @@ To maximize portability of built products, this action builds Go binaries with [
 If you aren't using Go for your compiled extension, you'll need to provide your own script for compiling your extension:
 
 ```yaml
-- uses: cli/gh-extension-precompile@v1
+- uses: cli/gh-extension-precompile@v2
   with:
     build_script_override: "script/build.sh"
 ```
@@ -91,7 +109,7 @@ jobs:
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
-      - uses: cli/gh-extension-precompile@v1
+      - uses: cli/gh-extension-precompile@v2
         with:
           gpg_fingerprint: ${{ steps.import_gpg.outputs.fingerprint }}
 ```

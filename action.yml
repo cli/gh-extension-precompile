@@ -24,4 +24,5 @@ runs:
         GITHUB_TOKEN: ${{ github.token }}
         GH_EXT_BUILD_SCRIPT: ${{ inputs.build_script_override }}
         GPG_FINGERPRINT: ${{ inputs.gpg_fingerprint }}
+        PLATFORM: ${{ inputs.platform }}
       shell: bash
