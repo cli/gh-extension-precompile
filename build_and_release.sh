@@ -18,7 +18,10 @@ platforms=(
   windows-arm64
 )
 
-if [[ $GITHUB_REF = refs/tags/* ]]; then
+if [ -n "$GH_RELEASE_TAG" ]; then
+  echo "invoking release tag override $GH_RELEASE_TAG"
+  tag="$GH_RELEASE_TAG"
+elif [[ $GITHUB_REF = refs/tags/* ]]; then
   tag="${GITHUB_REF#refs/tags/}"
 else
   tag="$(git describe --tags --abbrev=0)"
