@@ -8,6 +8,8 @@ inputs:
     default: "1.18"
   build_script_override:
     description: "Path to custom build script for producing binaries to upload"
+  draft_release:
+    description: "Create a draft release"
   release_tag_override:
     description: "Existing tag that the release should be created from"
 branding:
@@ -38,7 +40,8 @@ runs:
       env:
         GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_TOKEN: ${{ steps.choose_token.outputs.TOKEN }}
+        GPG_FINGERPRINT: ${{ inputs.gpg_fingerprint }}
         GH_EXT_BUILD_SCRIPT: ${{ inputs.build_script_override }}
         GH_RELEASE_TAG: ${{ inputs.release_tag_override }}
-        GPG_FINGERPRINT: ${{ inputs.gpg_fingerprint }}
+        DRAFT_RELEASE: ${{ inputs.draft_release }}
       shell: bash
