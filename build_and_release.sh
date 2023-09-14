@@ -32,6 +32,11 @@ if [[ $tag = *-* ]]; then
   prerelease="--prerelease"
 fi
 
+draft_release=""
+if [[ "$DRAFT_RELEASE" = "true" ]]; then
+  draft_release="--draft"
+fi
+
 if [ -n "$GH_EXT_BUILD_SCRIPT" ]; then
   echo "invoking build script override $GH_EXT_BUILD_SCRIPT"
   ./"$GH_EXT_BUILD_SCRIPT" "$tag"
@@ -76,5 +81,5 @@ if gh release view "$tag" >/dev/null; then
   gh release upload "$tag" --clobber -- "${assets[@]}"
 else
   echo "creating release and uploading assets..."
-  gh release create "$tag" $prerelease --title="${GITHUB_REPOSITORY#*/} ${tag#v}" --generate-notes -- "${assets[@]}"
+  gh release create "$tag" $prerelease $draft_release --title="${GITHUB_REPOSITORY#*/} ${tag#v}" --generate-notes -- "${assets[@]}"
 fi
