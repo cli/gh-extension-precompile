@@ -5,6 +5,8 @@ inputs:
     description: "Path to custom build script for producing binaries to upload"
   draft_release:
     description: "Create a draft release"
+  github_token:
+    description: "GitHub token to use, defaults to github.token if unspecified"
   go_version:
     description: "The Go version to use for compiling (supports semver spec and ranges)"
     default: "1.18"
@@ -23,23 +25,23 @@ runs:
       with:
         go-version: ${{ inputs.go_version }}
 
-    # if GITHUB_TOKEN env var is set, use it
-    - id: choose_token
+    - id: determine_token
       run: |
-        if [ -n "$GITHUB_TOKEN" ]; then
-          token=$GITHUB_TOKEN
+        if [ -n "$INPUT_TOKEN" ]; then
+          token=$INPUT_TOKEN
         else
-          token=$REPO_TOKEN
+          token=$DEFAULT_TOKEN
         fi
         echo "TOKEN=$token" >> "$GITHUB_OUTPUT"
       env:
-        REPO_TOKEN: ${{ github.token }}
+        DEFAULT_TOKEN: ${{ github.token }}
+        INPUT_TOKEN: ${{ inputs.github_token }}
       shell: bash
 
     - run: ${GITHUB_ACTION_PATH//\\//}/build_and_release.sh
       env:
         GITHUB_REPOSITORY: ${{ github.repository }}
-        GITHUB_TOKEN: ${{ steps.choose_token.outputs.TOKEN }}
+        GITHUB_TOKEN: ${{ steps.determine_token.outputs.TOKEN }}
         GPG_FINGERPRINT: ${{ inputs.gpg_fingerprint }}
         GH_EXT_BUILD_SCRIPT: ${{ inputs.build_script_override }}
         GH_RELEASE_TAG: ${{ inputs.release_tag_override }}
