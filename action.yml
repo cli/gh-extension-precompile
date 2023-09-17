@@ -1,15 +1,15 @@
 name: "release extension"
 description: "Generate a release for a precompiled gh extension"
 inputs:
-  gpg_fingerprint:
-    description: "GPG fingerprint to use for signing releases"
-  go_version:
-    description: "The Go version to use for compiling (supports semver spec and ranges)"
-    default: "1.18"
   build_script_override:
     description: "Path to custom build script for producing binaries to upload"
   draft_release:
     description: "Create a draft release"
+  go_version:
+    description: "The Go version to use for compiling (supports semver spec and ranges)"
+    default: "1.18"
+  gpg_fingerprint:
+    description: "GPG fingerprint to use for signing releases"
   release_tag_override:
     description: "Existing tag that the release should be created from"
 branding:
