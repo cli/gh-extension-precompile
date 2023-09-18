@@ -6,14 +6,14 @@ inputs:
   draft_release:
     description: "Create a draft release"
   github_token:
-    description: "GitHub token to use, defaults to github.token if unspecified"
+    description: "GitHub token to use, defaults to `github.token` if unspecified"
   go_version:
     description: "The Go version to use for compiling (supports semver spec and ranges)"
     default: "1.18"
   gpg_fingerprint:
     description: "GPG fingerprint to use for signing releases"
-  release_tag_override:
-    description: "Existing tag that the release should be created from"
+  release_tag:
+    description: "Existing tag that the release should be created from, defaults to `github.ref` if unspecified"
 branding:
   color: purple
   icon: box
@@ -44,6 +44,6 @@ runs:
         GITHUB_TOKEN: ${{ steps.determine_token.outputs.TOKEN }}
         GPG_FINGERPRINT: ${{ inputs.gpg_fingerprint }}
         GH_EXT_BUILD_SCRIPT: ${{ inputs.build_script_override }}
-        GH_RELEASE_TAG: ${{ inputs.release_tag_override }}
+        GH_RELEASE_TAG: ${{ inputs.release_tag }}
         DRAFT_RELEASE: ${{ inputs.draft_release }}
       shell: bash
