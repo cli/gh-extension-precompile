@@ -13,7 +13,7 @@ inputs:
   gpg_fingerprint:
     description: "GPG fingerprint to use for signing releases"
   release_tag:
-    description: "Existing tag that the release should be created from, defaults to `github.ref` if unspecified"
+    description: "Tag that the release should be created from, defaults to `github.ref` if unspecified"
 branding:
   color: purple
   icon: box
