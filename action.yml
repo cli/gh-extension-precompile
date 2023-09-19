@@ -38,12 +38,27 @@ runs:
         INPUT_TOKEN: ${{ inputs.github_token }}
       shell: bash
 
+    - id: determine_release_tag
+      run: |
+        if [ -n "$INPUT_TAG" ]; then
+          tag="$INPUT_TAG"
+        elif [[ $GITHUB_REF = refs/tags/* ]]; then
+          tag="${GITHUB_REF#refs/tags/}"
+        else
+          tag="$(git describe --tags --abbrev=0)"
+        fi
+
+        echo "TAG=$tag" >> "$GITHUB_OUTPUT"
+      env:
+        INPUT_TAG: ${{ inputs.release_tag }}
+      shell: bash
+
     - run: ${GITHUB_ACTION_PATH//\\//}/build_and_release.sh
       env:
         GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_TOKEN: ${{ steps.determine_token.outputs.TOKEN }}
         GPG_FINGERPRINT: ${{ inputs.gpg_fingerprint }}
         GH_EXT_BUILD_SCRIPT: ${{ inputs.build_script_override }}
-        GH_RELEASE_TAG: ${{ inputs.release_tag }}
+        GH_RELEASE_TAG: ${{ steps.determine_release_tag.outputs.TAG }}
         DRAFT_RELEASE: ${{ inputs.draft_release }}
       shell: bash
