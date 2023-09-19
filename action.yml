@@ -1,13 +1,19 @@
 name: "release extension"
 description: "Generate a release for a precompiled gh extension"
 inputs:
-  gpg_fingerprint:
-    description: "GPG fingerprint to use for signing releases"
   build_script_override:
     description: "Path to custom build script for producing binaries to upload"
+  draft_release:
+    description: "Create a draft release"
+  github_token:
+    description: "GitHub token to use, defaults to `github.token` if unspecified"
   go_version:
     description: "The Go version to use for compiling (supports semver spec and ranges)"
     default: "1.18"
+  gpg_fingerprint:
+    description: "GPG fingerprint to use for signing releases"
+  release_tag:
+    description: "Tag that the release should be created from, defaults to `github.ref` if unspecified"
 branding:
   color: purple
   icon: box
@@ -18,10 +24,41 @@ runs:
     - uses: actions/setup-go@v3
       with:
         go-version: ${{ inputs.go_version }}
+
+    - id: determine_token
+      run: |
+        if [ -n "$INPUT_TOKEN" ]; then
+          token=$INPUT_TOKEN
+        else
+          token=$DEFAULT_TOKEN
+        fi
+        echo "TOKEN=$token" >> "$GITHUB_OUTPUT"
+      env:
+        DEFAULT_TOKEN: ${{ github.token }}
+        INPUT_TOKEN: ${{ inputs.github_token }}
+      shell: bash
+
+    - id: determine_release_tag
+      run: |
+        if [ -n "$INPUT_TAG" ]; then
+          tag="$INPUT_TAG"
+        elif [[ $GITHUB_REF = refs/tags/* ]]; then
+          tag="${GITHUB_REF#refs/tags/}"
+        else
+          tag="$(git describe --tags --abbrev=0)"
+        fi
+
+        echo "TAG=$tag" >> "$GITHUB_OUTPUT"
+      env:
+        INPUT_TAG: ${{ inputs.release_tag }}
+      shell: bash
+
     - run: ${GITHUB_ACTION_PATH//\\//}/build_and_release.sh
       env:
         GITHUB_REPOSITORY: ${{ github.repository }}
-        GITHUB_TOKEN: ${{ github.token }}
-        GH_EXT_BUILD_SCRIPT: ${{ inputs.build_script_override }}
+        GITHUB_TOKEN: ${{ steps.determine_token.outputs.TOKEN }}
         GPG_FINGERPRINT: ${{ inputs.gpg_fingerprint }}
+        GH_EXT_BUILD_SCRIPT: ${{ inputs.build_script_override }}
+        GH_RELEASE_TAG: ${{ steps.determine_release_tag.outputs.TAG }}
+        DRAFT_RELEASE: ${{ inputs.draft_release }}
       shell: bash

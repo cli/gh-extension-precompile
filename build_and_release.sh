@@ -18,20 +18,19 @@ platforms=(
   windows-arm64
 )
 
-if [[ $GITHUB_REF = refs/tags/* ]]; then
-  tag="${GITHUB_REF#refs/tags/}"
-else
-  tag="$(git describe --tags --abbrev=0)"
+prerelease=""
+if [[ $GH_RELEASE_TAG = *-* ]]; then
+  prerelease="--prerelease"
 fi
 
-prerelease=""
-if [[ $tag = *-* ]]; then
-  prerelease="--prerelease"
+draft_release=""
+if [[ "$DRAFT_RELEASE" = "true" ]]; then
+  draft_release="--draft"
 fi
 
 if [ -n "$GH_EXT_BUILD_SCRIPT" ]; then
   echo "invoking build script override $GH_EXT_BUILD_SCRIPT"
-  ./"$GH_EXT_BUILD_SCRIPT" "$tag"
+  ./"$GH_EXT_BUILD_SCRIPT" "$GH_RELEASE_TAG"
 else
   IFS=$'\n' read -d '' -r -a supported_platforms < <(go tool dist list) || true
 
@@ -68,10 +67,10 @@ if [ -n "$GPG_FINGERPRINT" ]; then
   assets+=(checksums.txt checksums.txt.sig)
 fi
 
-if gh release view "$tag" >/dev/null; then
+if gh release view "$GH_RELEASE_TAG" >/dev/null; then
   echo "uploading assets to an existing release..."
-  gh release upload "$tag" --clobber -- "${assets[@]}"
+  gh release upload "$GH_RELEASE_TAG" --clobber -- "${assets[@]}"
 else
   echo "creating release and uploading assets..."
-  gh release create "$tag" $prerelease --title="${GITHUB_REPOSITORY#*/} ${tag#v}" --generate-notes -- "${assets[@]}"
+  gh release create "$GH_RELEASE_TAG" $prerelease $draft_release --title="${GITHUB_REPOSITORY#*/} ${GH_RELEASE_TAG#v}" --generate-notes -- "${assets[@]}"
 fi
