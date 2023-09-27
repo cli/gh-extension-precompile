@@ -30,9 +30,9 @@ runs:
     - id: determine_token
       run: |
         if [ -n "$INPUT_TOKEN" ]; then
-          token=$INPUT_TOKEN
+          token="$INPUT_TOKEN"
         else
-          token=$DEFAULT_TOKEN
+          token="$DEFAULT_TOKEN"
         fi
         echo "TOKEN=$token" >> "$GITHUB_OUTPUT"
       env:
@@ -58,7 +58,7 @@ runs:
     - id: determine_release_title
       run: |
         if [ -n "$INPUT_TITLE" ]; then
-          title=$INPUT_TITLE
+          title="$INPUT_TITLE"
         else
           title="${GITHUB_REPOSITORY#*/}"
         fi
