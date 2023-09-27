@@ -14,6 +14,8 @@ inputs:
     description: "GPG fingerprint to use for signing releases"
   release_tag:
     description: "Tag that the release should be created from, defaults to `github.ref` if unspecified"
+  release_title_prefix:
+    description: "Title prefix of the release, defaults to repository name if unspecified"
 branding:
   color: purple
   icon: box
@@ -28,9 +30,9 @@ runs:
     - id: determine_token
       run: |
         if [ -n "$INPUT_TOKEN" ]; then
-          token=$INPUT_TOKEN
+          token="$INPUT_TOKEN"
         else
-          token=$DEFAULT_TOKEN
+          token="$DEFAULT_TOKEN"
         fi
         echo "TOKEN=$token" >> "$GITHUB_OUTPUT"
       env:
@@ -53,6 +55,18 @@ runs:
         INPUT_TAG: ${{ inputs.release_tag }}
       shell: bash
 
+    - id: determine_release_title_prefix
+      run: |
+        if [ -n "$INPUT_TITLE" ]; then
+          prefix="$INPUT_TITLE"
+        else
+          prefix="${GITHUB_REPOSITORY#*/}"
+        fi
+        echo "PREFIX=$prefix" >> "$GITHUB_OUTPUT"
+      env:
+        INPUT_TITLE: ${{ inputs.release_title_prefix }}
+      shell: bash
+
     - run: ${GITHUB_ACTION_PATH//\\//}/build_and_release.sh
       env:
         GITHUB_REPOSITORY: ${{ github.repository }}
@@ -60,5 +74,6 @@ runs:
         GPG_FINGERPRINT: ${{ inputs.gpg_fingerprint }}
         GH_EXT_BUILD_SCRIPT: ${{ inputs.build_script_override }}
         GH_RELEASE_TAG: ${{ steps.determine_release_tag.outputs.TAG }}
+        GH_RELEASE_TITLE_PREFIX: ${{ steps.determine_release_title_prefix.outputs.PREFIX }}
         DRAFT_RELEASE: ${{ inputs.draft_release }}
       shell: bash
