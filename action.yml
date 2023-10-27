@@ -9,7 +9,8 @@ inputs:
     description: "GitHub token to use, defaults to `github.token` if unspecified"
   go_version:
     description: "The Go version to use for compiling (supports semver spec and ranges)"
-    default: "1.18"
+  go_version_file:
+    description: Path to the go.mod or go.work file to determine version of go to use
   gpg_fingerprint:
     description: "GPG fingerprint to use for signing releases"
   release_tag:
@@ -25,7 +26,13 @@ runs:
     # TODO: figure out how to avoid setting up Go for non-Go extensions
     - uses: actions/setup-go@v3
       with:
-        go-version: ${{ inputs.go_version }}
+        # The default go version is managed here because actions/setup-go favors go-version over go-version-file,
+        # requiring us to only pass it if no other inputs are provided.
+        #
+        # Otherwise, we pass along the values given, letting the user catch the warning notice in the logs
+        # and picking either go-version or go-version-file.
+        go-version: ${{(inputs.go_version_file == '' && inputs.go_version == '') && '1.18' || inputs.go_version}}
+        go-version-file: ${{inputs.go_version_file}}
 
     - id: determine_token
       run: |
