@@ -24,7 +24,7 @@ if [[ $GH_RELEASE_TAG = *-* ]]; then
 fi
 
 draft_release=""
-if [[ "$DRAFT_RELEASE" = "true" ]]; then
+if [[ "${DRAFT_RELEASE:-}" = "true" ]]; then
   draft_release="--draft"
 fi
 
