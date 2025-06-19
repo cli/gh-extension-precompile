@@ -44,22 +44,6 @@ To maximize portability of built products, this action builds Go binaries with [
     CGO_ENABLED: 1
 ```
 
-### Customizing go build options
-
-You can pass additional options to the `go build` command using the `go_build_options` input parameter. This is useful for specifying a different source directory or adding build tags:
-
-```yaml
-- uses: cli/gh-extension-precompile@v2
-  with:
-    go_build_options: './cmd/my-extension'
-```
-
-```yaml
-- uses: cli/gh-extension-precompile@v2
-  with:
-    go_build_options: '-tags production'
-```
-
 ### Building for Android
 
 `gh-extension-precompile@v2` introduces a breaking change by disabling `android-arm64` and `android-amd64` build targets by default due to [Go external linking requirements](https://github.com/cli/gh-extension-precompile/issues/50#issuecomment-2078086299).
@@ -76,7 +60,21 @@ To enable Android build targets:
 
 ### Customizing the build process for Go extensions
 
-If you need to customize the build process for your Go extension, you can provide a custom build script. See [Extensions written in other compiled languages](#extensions-written-in-other-compiled-languages) below for instructions.
+If you only need to customize the `go build` command, the `go_build_options` input parameter can include additional flags and arguments for all platforms:
+
+```yaml
+- uses: cli/gh-extension-precompile@v2
+  with:
+    go_build_options: './cmd/my-extension'
+```
+
+```yaml
+- uses: cli/gh-extension-precompile@v2
+  with:
+    go_build_options: '-tags production'
+```
+
+For more complex customizations, see [Extensions written in other compiled languages](#extensions-written-in-other-compiled-languages) to provide a custom build script.
 
 ## Extensions written in other compiled languages
 
