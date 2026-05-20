@@ -1,12 +1,13 @@
 #!/bin/bash
+
 # Exit early if a single command fails
 set -e
 
 # Add color utilities.
-# TODO: DO we need to check for color support if a self-hosted runner happens to do this?
+# TODO: Do we need to check for color support if a self-hosted runner happens to not support color?
 source utils.sh
 
-# An array containing all goos
+# An array containing all GOOS-es to build the binaries for.
 platforms=(
   darwin-amd64
   darwin-arm64
