@@ -102,7 +102,7 @@ for f in dist/*; do
 done
 
 if [ "${#assets[@]}" -eq 0 ]; then
-  quit "No executable files found in dist/!"
+  fail "No executable files found in dist/!"
 fi
 
 if [ -n "$GPG_FINGERPRINT" ]; then
