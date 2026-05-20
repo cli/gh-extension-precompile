@@ -42,9 +42,9 @@ error () {
 }
 
 # Annotate text with a red [✗] and send it to stderr,
-# then return the specified non-zero error code to kill the program.
+# then exit with the specified non-zero error code.
 # Defaults to error code 1 if not provided.
 fail () {
   error "$1"
-  return "${2:-1}"
+  exit "${2:-1}"
 }
