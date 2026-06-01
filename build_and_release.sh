@@ -3,9 +3,11 @@
 # Exit early if a single command fails
 set -e
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
 # Add color utilities.
 # TODO: Do we need to check for color support if a self-hosted runner happens to not support color?
-source utils.sh
+source "${SCRIPT_DIR}"/utils.sh
 
 # An array containing all GOOS-es to build the binaries for.
 platforms=(
