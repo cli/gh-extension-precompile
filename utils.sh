@@ -23,22 +23,23 @@ blue () {
 
 # Annotate text with a blue [...].
 info () {
-  printf "[$(blue ...)] %s\n" "$1"
+  printf "[$(blue '...')] %s\n" "$1"
 }
 
 # Annotate text with a green [✔].
 success () {
+  # Extra space used to avoid the emoji clipping into the closing bracket
   printf "[$(green '✔ ')] %s\n" "$1"
 }
 
 # Annotate text with an orange [!!!] and send it to stderr.
 warn () {
-  printf "[$(orange !!!)] %s\n" "$1" >&2
+  printf "[$(orange '!!!')] %s\n" "$1" >&2
 }
 
 # Annotate text with a red [✗] and send it to stderr.
 error () {
-  printf "[ $(red '✗') ] %s\n" "$1" >&2
+  printf "[$(red '✗')] %s\n" "$1" >&2
 }
 
 # Annotate text with a red [✗] and send it to stderr,
