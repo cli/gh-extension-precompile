@@ -1,6 +1,15 @@
 #!/bin/bash
+
+# Exit early if a single command fails
 set -e
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
+# Add color utilities.
+# TODO: Do we need to check for color support if a self-hosted runner happens to not support color?
+source "${SCRIPT_DIR}"/utils.sh
+
+# An array containing all GOOS-es to build the binaries for.
 platforms=(
   darwin-amd64
   darwin-arm64
@@ -17,50 +26,53 @@ platforms=(
 )
 
 if [[ "$RELEASE_ANDROID" == "true" ]]; then
-  platforms+=("android-amd64")
-  platforms+=("android-arm64")
-fi
+  # We must have `ANDROID_SDK_VERSION` and `ANDROID_NDK_HOME` set to build for android.
+  # The latter is available by default on GitHub hosted runners, but not necessarily the former.
+  if [[ -z "$ANDROID_SDK_VERSION" ]]; then
+    fail "Cannot build for Android without ANDROID_SDK_VERSION environment variable!"
+  elif [[ ! -d "$ANDROID_NDK_HOME" ]]; then
+    fail "Cannot build for Android without ANDROID_NDK_HOME environment variable!"
+  fi
 
-# We must know the android sdk version to build for android.
-if [[ "$RELEASE_ANDROID" == "true" && -z "$ANDROID_SDK_VERSION" ]]; then
-  echo "error: Cannot build for android without android_sdk_version." >&2
-  exit 1
-fi
-
-# We must have `ANDROID_NDK_HOME` set to build for android.
-# This will be available by default on GitHub hosted runners.
-if [[ "$RELEASE_ANDROID" == "true" && ! -d "$ANDROID_NDK_HOME" ]]; then
-  echo "error: Cannot build for android without android_ndk_home." >&2
-  exit 1
+  platforms+=("android-amd64" "android-arm64")
 fi
 
 prerelease=""
+# TODO: Do we want to allow users to set `--prerelease` via a workflow flag?
 if [[ $GH_RELEASE_TAG = *-* ]]; then
+  info "Marking release as not production-ready..."
   prerelease="--prerelease"
 fi
 
 draft_release=""
 if [[ "$DRAFT_RELEASE" = "true" ]]; then
+  info "Marking release as draft..."
   draft_release="--draft"
 fi
 
 if [ -n "$GH_EXT_BUILD_SCRIPT" ]; then
-  echo "invoking build script override $GH_EXT_BUILD_SCRIPT"
+  info "Invoking build script override: $GH_EXT_BUILD_SCRIPT"
   ./"$GH_EXT_BUILD_SCRIPT" "$GH_RELEASE_TAG"
 else
+  # Create build for individual platforms, ensuring they are supported
   IFS=$'\n' read -d '' -r -a supported_platforms < <(go tool dist list) || true
 
   for p in "${platforms[@]}"; do
     goos="${p%-*}"
     goarch="${p#*-}"
     if [[ " ${supported_platforms[*]} " != *" ${goos}/${goarch} "* ]]; then
-      echo "warning: skipping unsupported platform $p" >&2
+      warn "Skipping unsupported platform: $p"
       continue
     fi
+
+    # Add .exe suffix on windows
     ext=""
     if [ "$goos" = "windows" ]; then
       ext=".exe"
     fi
+
+    path="dist/${p}${ext}"
+
     cc=""
     cgo_enabled="${CGO_ENABLED:-0}"
     if [ "$goos" = "android" ]; then
@@ -72,10 +84,18 @@ else
         cgo_enabled="1"
       fi
     fi
-    GOOS="$goos" GOARCH="$goarch" CGO_ENABLED="$cgo_enabled" CC="$cc" go build -trimpath -ldflags="-s -w" -o "dist/${p}${ext}" "${GO_BUILD_OPTIONS}"
+
+    if GOOS="$goos" GOARCH="$goarch" CGO_ENABLED="$cgo_enabled" CC="$cc" \
+      go build -trimpath -ldflags="-s -w" -o "${path}" "${GO_BUILD_OPTIONS}"; then
+      success "Successfully created binary for ${goos}/${goarch} at ${path}!"
+    else
+      fail "Error creating binary for ${goos}/${goarch}!" $?
+    fi
+
   done
 fi
 
+# TODO: We can likely rework this to use `readarray` or just compacting the glob directly with `nullglob`
 assets=()
 for f in dist/*; do
   if [ -f "$f" ]; then
@@ -84,20 +104,20 @@ for f in dist/*; do
 done
 
 if [ "${#assets[@]}" -eq 0 ]; then
-  echo "error: no files found in dist/*" >&2
-  exit 1
+  fail "No executable files found in dist/!"
 fi
 
 if [ -n "$GPG_FINGERPRINT" ]; then
   shasum -a 256 "${assets[@]}" > checksums.txt
   gpg --output checksums.txt.sig --detach-sign checksums.txt
   assets+=(checksums.txt checksums.txt.sig)
+  success "Successfully signed binaries!"
 fi
 
 if gh release view "$GH_RELEASE_TAG" >/dev/null; then
-  echo "uploading assets to an existing release..."
   gh release upload "$GH_RELEASE_TAG" --clobber -- "${assets[@]}"
+  success "Uploaded assets to existing release ${GH_RELEASE_TAG}!"
 else
-  echo "creating release and uploading assets..."
   gh release create "$GH_RELEASE_TAG" $prerelease $draft_release --title="${GH_RELEASE_TITLE_PREFIX} ${GH_RELEASE_TAG#v}" --generate-notes -- "${assets[@]}"
+  success "Created release ${GH_RELEASE_TAG} and uploaded assets!"
 fi
